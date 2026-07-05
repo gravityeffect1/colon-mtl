@@ -1,0 +1,7 @@
+class,slide_id,size_mb,path,patient_id,multi_class_patient
+ADK-14,271159 HE,2642.5,C:\data-colon\ADK-14\271159 HE.svs,271159,False
+ADK-14,272860 HE,2606.1,C:\data-colon\ADK-14\272860 HE.svs,272860,False
+HG-10,271166-1 HE,1731.4,C:\data-colon\HG-10\271166-1 HE.svs,271166,False
+HG-10,273013-2 HE,3093.6,C:\data-colon\HG-10\273013-2 HE.svs,273013,True
+HG-10,273013-3 HE,2406.0,C:\data-colon\HG-10\273013-3 HE.svs,273013,True
+Hplastic-3,273013-1 HE,1113.8,C:\data-colon\Hplastic-3\273013-1 HE.svs,273013,True
