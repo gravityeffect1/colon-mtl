@@ -1,7 +1,0 @@
-dataset_annotated_cncc/
-data/
-outputs/*.pt
-outputs/*.png
-__pycache__/
-*.pyc
-.env
