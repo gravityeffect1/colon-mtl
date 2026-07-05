@@ -1,7 +1,9 @@
 import yaml
 import torch
 import pandas as pd
-from torch.utils.data import DataLoader
+import cv2
+import numpy as np
+from torch.utils.data import DataLoader, WeightedRandomSampler
 from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).parents[1]))
@@ -12,6 +14,15 @@ from src.training.losses import DiceCELoss
 from src.evaluation.metrics import compute_metrics
 
 
+def get_dominant_class(label_path):
+    mask = cv2.imread(label_path, cv2.IMREAD_GRAYSCALE)
+    unique = np.unique(mask)
+    for cls in [2, 3, 4, 5]:
+        if cls in unique:
+            return cls
+    return 1
+
+
 def main():
     with open("configs/seg_cncc.yaml") as f:
         cfg = yaml.safe_load(f)
@@ -20,14 +31,25 @@ def main():
     print(f"Device: {device}")
 
     df = pd.read_csv("outputs/manifest_valid.csv")
-    train_df = df[df["split"] == "train"]
+    train_df = df[df["split"] == "train"].copy()
     val_df = df[df["split"] == "val"]
     print(f"Train: {len(train_df)} | Val: {len(val_df)}")
+
+    train_df["dominant_class"] = train_df["label_path"].apply(get_dominant_class)
+    class_counts = train_df["dominant_class"].value_counts()
+    class_weights = {cls: 1.0 / count for cls, count in class_counts.items()}
+    sample_weights = train_df["dominant_class"].map(class_weights).values
+
+    sampler = WeightedRandomSampler(
+        weights=sample_weights,
+        num_samples=len(sample_weights),
+        replacement=True
+    )
 
     train_loader = DataLoader(
         ColonDataset(train_df, "train", cfg["image_size"]),
         batch_size=cfg["batch_size"],
-        shuffle=True,
+        sampler=sampler,
         num_workers=0,
     )
     val_loader = DataLoader(
