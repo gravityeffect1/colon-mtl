@@ -35,7 +35,6 @@ def main():
     val_df = df[df["split"] == "val"]
     print(f"Train: {len(train_df)} | Val: {len(val_df)}")
 
-    # weighted sampling — mostenit din train_baseline.py
     train_df["dominant_class"] = train_df["label_path"].apply(get_dominant_class)
     class_counts = train_df["dominant_class"].value_counts()
     class_weights = {cls: 1.0 / count for cls, count in class_counts.items()}
